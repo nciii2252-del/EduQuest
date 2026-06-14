@@ -1,0 +1,12 @@
+ALTER TABLE public.users
+  ADD COLUMN IF NOT EXISTS xp INTEGER NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS level INTEGER NOT NULL DEFAULT 1,
+  ADD COLUMN IF NOT EXISTS streak INTEGER NOT NULL DEFAULT 0;
+
+UPDATE public.users
+SET
+  xp = COALESCE(xp, 0),
+  level = COALESCE(level, 1),
+  streak = COALESCE(streak, 0);
+
+NOTIFY pgrst, 'reload schema';
