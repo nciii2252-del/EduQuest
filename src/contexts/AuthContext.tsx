@@ -40,8 +40,12 @@ function clearStoredUsers() {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
-    clearStoredUsers();
+    try {
+    const savedUser = localStorage.getItem("codequest-user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  } catch {
     return null;
+  }
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const userData = await loginUser(email.trim(), password, role);
       setUser(userData);
+      localStorage.setItem("codequest-user", JSON.stringify(userData));
     } catch (err: any) {
       setError(err.message || "Login gagal");
       throw err;
